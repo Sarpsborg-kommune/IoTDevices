@@ -1,0 +1,42 @@
+﻿@page "/list"
+@inject HttpClient Http
+
+<h3>List</h3>
+
+@if (iotDevices == null)
+{
+    <div class="spinner"></div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <th class="text-center">Select</th>
+            <th>DevEUI</th>
+            <th>Type</th>
+            <th>Building</th>
+            <th>Room</th>
+            <th>Placement</th>
+        </thead>
+        <tbody>
+            @foreach (var iotDevice in iotDevices)
+            {
+                <tr>
+                    <td class="text-center"><input type="checkbox" /></td>
+                    <td>@iotDevice.devEui</td>
+                    <td>@iotDevice.type</td>
+                    <td>@iotDevice.location.buildingName</td>
+                    <td>@iotDevice.location.roomNo</td>
+                    <td>@iotDevice.location.placement</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    private const string ServiceEndpoint = "https://iotdevicesapi-sk.azurewebsites.net/db";
+    private IoTDevice[] iotDevices;
+    protected override async Task OnInitializedAsync() => await GetDeviceItems();
+
+    private async Task GetDeviceItems() => iotDevices = await Http.GetFromJsonAsync<IoTDevice[]>(ServiceEndpoint);
+}
